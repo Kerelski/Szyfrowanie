@@ -6,11 +6,23 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        int[][] box = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        int[][] box = {{1,0,0,0},{1,0,0,0},{1,0,0,0},{1,0,0,0}};
 
         printBox(box);
 
         int[][] chBox = AES.subBytes(box);
+
+        printBox(chBox);
+
+        chBox = AES.shiftRows(chBox);
+
+        printBox(chBox);
+
+        chBox = AES.mixColumns(chBox);
+
+        printBox(chBox);
+
+        chBox = AES.invMixColumns(chBox);
 
         printBox(chBox);
 
@@ -30,7 +42,7 @@ public class Main {
     private static void printBox(int[][] box) {
         for(int i = 0; i < 4; i++) {
             for(int j = 0; j < 4; j++) {
-                System.out.print(box[i][j]);
+                System.out.print(Integer.toHexString(box[i][j]) +" ");
             }
             System.out.println();
         }

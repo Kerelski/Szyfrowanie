@@ -39,40 +39,18 @@ public class AES {
             {0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d}
     };
 
-    private static final int[][] mixColMatrix = {
-            {2, 3, 1, 1},
-            {1, 2, 3, 1},
-            {1, 1, 2, 3},
-            {3, 1, 1, 2}
-    };
-
     public static int[][] subBytes(int[][] block) {
 
         int[][] chBlock = new int[4][4];
-        int x = 0, y = 0, pow;
-        for(int i = 0; i < 3; i+=2) {
-            pow = 8;
-            for(int j = 0 ; j < 4; j++) {
-                x += block[j][i]*pow;
-                pow /=2;
-            }
-            pow = 8;
-            for(int j = 0 ; j < 4; j++) {
-                y += block[j][i+1]*pow;
-                pow /=2;
-            }
-            int temp = sBox[x][y];
+        int x, y;
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                y = block[i][j]%16;
+                block[i][j]/=16;
+                x = block[i][j]%16;
 
-            StringBuilder binaryString = new StringBuilder(Integer.toBinaryString(temp));
-            while (binaryString.length() < 8) {
-                binaryString.insert(0, "0");
+                chBlock[i][j] = sBox[x][y];
             }
-
-            for (int j = 0; j < 4; j++) {
-                chBlock[j][i] = Character.getNumericValue(binaryString.charAt(j));
-                chBlock[j][i+1] = Character.getNumericValue(binaryString.charAt(j+4));
-            }
-            x = y = 0;
         }
         return chBlock;
     }
@@ -90,5 +68,45 @@ public class AES {
             }
         }
         return chBlock;
+    }
+
+    public static int[][] mixColumns(int[][] block) {
+        int[][] chBlock = new int[4][4];
+
+        for (int col = 0; col < 4; col++) {
+            chBlock[0][col] = (multiply(block[0][col], 2) ^ multiply(block[1][col], 3) ^ block[2][col] ^ block[3][col]) & 0xFF;
+            chBlock[1][col] = (block[0][col] ^ multiply(block[1][col], 2) ^ multiply(block[2][col], 3) ^ block[3][col]) & 0xFF;
+            chBlock[2][col] = (block[0][col] ^ block[1][col] ^ multiply(block[2][col], 2) ^ multiply(block[3][col], 3)) & 0xFF;
+            chBlock[3][col] = (multiply(block[0][col], 3) ^ block[1][col] ^ block[2][col] ^ multiply(block[3][col], 2)) & 0xFF;
+        }
+
+        return chBlock;
+    }
+    public static int[][] invMixColumns(int[][] block) {
+        int[][] chBlock = new int[4][4];
+
+        for (int col = 0; col < 4; col++) {
+            chBlock[0][col] = (multiply(block[0][col], 14) ^ multiply(block[1][col], 11) ^ multiply(block[2][col], 13) ^ multiply(block[3][col], 9)) & 0xFF;
+            chBlock[1][col] = (multiply(block[0][col], 9) ^ multiply(block[1][col], 14) ^ multiply(block[2][col], 11) ^ multiply(block[3][col], 13)) & 0xFF;
+            chBlock[2][col] = (multiply(block[0][col], 13) ^ multiply(block[1][col], 9) ^ multiply(block[2][col], 14) ^ multiply(block[3][col], 11)) & 0xFF;
+            chBlock[3][col] = (multiply(block[0][col], 11) ^ multiply(block[1][col], 13) ^ multiply(block[2][col], 9) ^ multiply(block[3][col], 14)) & 0xFF;
+        }
+
+        return chBlock;
+    }
+    private static int multiply(int a, int b) {
+        int result = 0;
+        while (b != 0) {
+            if ((b & 1) == 1) {
+                result ^= a;
+            }
+            boolean highBitSet = (a & 0x80) != 0;
+            a <<= 1;
+            if (highBitSet) {
+                a ^= 0x1B;
+            }
+            b >>= 1;
+        }
+        return result;
     }
 }
