@@ -1,30 +1,32 @@
 package org.example;
 
+import javax.swing.*;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        AES aes = new AES();
+        byte[][] box = {
+                {(byte) 0x01,(byte) 0x00,(byte) 0x00,(byte) 0xbf},
+                {(byte) 0x01,(byte) 0x00,(byte) 0x00,(byte) 0x00},
+                {(byte) 0x00,(byte) 0x04,(byte) 0x00,(byte) 0xFF},
+                {(byte) 0x00,(byte) 0x00,(byte) 0xa1,(byte) 0x00}};
 
-        byte[][] box = {{1,0,0,0},{1,0,0,0},{1,0,0,0},{1,0,0,0}};
+        CipherKey secretKey = new CipherKey(256);
+        secretKey.showKey();
 
         printBox(box);
 
-        byte[][] chBox = aes.subBytes(box);
+        box = AES.encode(box, secretKey.getCipherKey());
 
-        printBox(chBox);
+        printBox(box);
 
-        chBox = aes.shiftRows(chBox);
+        box = AES.decode(box, secretKey.getCipherKey());
 
-        printBox(chBox);
+        printBox(box);
 
-        chBox = AES.mixColumns(chBox);
 
-        printBox(chBox);
 
-        chBox = AES.invMixColumns(chBox);
-
-        printBox(chBox);
 
 //        FileReader fr = new FileReader("sample.pdf");
 //
@@ -38,16 +40,19 @@ public class Main {
 //            System.out.println(Integer.toBinaryString(b[i] & 0xFFFF));
 //        }
 
-        CipherKey secretKey = new CipherKey(256);
-        secretKey.showKey();
-        byte[][] roundKeys = Keys.keyExpansion(secretKey.getCipherKey());
-        chBox = AES.addRoundKey(roundKeys[13], chBox);
-        printBox(chBox);
 
-        // Wypisz klucze rundowe
-        for (int i = 0; i < 14 + 1; i++) {
-            System.out.println("Round Key " + i + ": " + bytesToHex(roundKeys[i]));
-        }
+//        chBox = AES.addRoundKey(roundKeys[0], chBox);
+//        printBox(chBox);
+
+//        chBox = AES.addRoundKey(roundKeys[0], chBox);
+//        printBox(chBox);
+//
+//        byte[][] roundKeys = Keys.keyExpansion(secretKey.getCipherKey());
+//
+//        // Wypisz klucze rundowe
+//        for (int i = 0; i < 14 + 1; i++) {
+//            System.out.println("Round Key " + i + ": " + bytesToHex(roundKeys[i]));
+//        }
 
     }
 
@@ -62,7 +67,7 @@ public class Main {
     private static void printBox(byte[][] box) {
         for(int i = 0; i < 4; i++) {
             for(int j = 0; j < 4; j++) {
-                System.out.print(Integer.toHexString(box[i][j]) +" ");
+                System.out.print(Integer.toHexString(box[i][j] & 0xFF)  +" ");
             }
             System.out.println();
         }

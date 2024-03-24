@@ -1,42 +1,49 @@
 package org.example;
 
-import java.util.Arrays;
-
 public class Keys {
 
     private static int nr = 14;
-    private static int nb = 4;
-    private static int nk = 8;
-    private static final int[] rCon = {
-            0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
+    private static final byte[][] rCon = {
+            {(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x08, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x20, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x80, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x1b, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x36, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x6c, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0xd8, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0xab, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x4d, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x9a, (byte) 0x00, (byte) 0x00, (byte) 0x00}
     };
 
-    public static byte[][] keyExpansion(byte[] cipherKey){
-        byte[][] roundKeys = new byte[nr + 1][4 * nb];
+    public static byte[][] keyExpansion(byte[] cipherKey) {
+        byte[][] roundKeys = new byte[nr + 1][16];
 
         // Pierwszy klucz rundowy to po prostu klucz główny
-        for (int i = 0; i < nk; i++) {
-            roundKeys[i] = new byte[]{cipherKey[4*i], cipherKey[4*i+1], cipherKey[4*i+2], cipherKey[4*i+3]};
+        for (int i = 0; i < 32; i++) {
+            roundKeys[i / 4][i % 4] = cipherKey[i];
         }
-        for (int i = nk; i < (nr+1); i++) {
-            byte[] temp = Arrays.copyOf(roundKeys[i-1], 4);
-            if (i % nk == 0) {
-                temp = AES.subWord(AES.rotWord(temp));
-
-                for (int j = 0; j < 4; j++) {
-                    temp[j] ^= rCon[i/nk - 1];
-                }
-            } else if (nk > 6 && i % nk == 4) {
-                temp = AES.subWord(temp);
+        for (int i = 1; i < (nr+1); i++) {
+            byte[] temp = new byte[4];
+            System.arraycopy(roundKeys[i - 1], 12, temp, 0, 4);
+            temp = AES.subWord(AES.rotWord(temp));
+            for (int j = 0; j < 4; j++) {
+                temp[j] ^= rCon[i-1][j];
             }
             for (int j = 0; j < 4; j++) {
-                roundKeys[i][j] = (byte) (roundKeys[i-nk][j] ^ temp[j]);
+                roundKeys[i][j] = (byte) (roundKeys[i - 1][j] ^ temp[j]);
             }
-
+            for (int j = 4; j < 16; j++) {
+                roundKeys[i][j] = (byte) (roundKeys[i][j-4] ^ roundKeys[i - 1][j]);
+            }
         }
 
         return roundKeys;
     }
-
 
 }

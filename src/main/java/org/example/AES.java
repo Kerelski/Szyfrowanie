@@ -41,10 +41,48 @@ public class AES {
             (byte)0x17, (byte)0x2b, (byte)0x04, (byte)0x7e, (byte)0xba, (byte)0x77, (byte)0xd6, (byte)0x26, (byte)0xe1, (byte)0x69, (byte)0x14, (byte)0x63, (byte)0x55, (byte)0x21, (byte)0x0c, (byte)0x7d
     };
 
-    public static byte[][] subBytes(byte[][] block) {
+    public static byte[][] encode(byte[][] block, byte [] secretKey) {
+        byte[][] roundKeys = Keys.keyExpansion(secretKey);
+
+        block = AES.addRoundKey(roundKeys[0],block);
+
+        for(int i = 1; i<=13;i++) {
+            block = AES.subBytes(block);
+            block = AES.shiftRows(block);
+            block = AES.mixColumns(block);
+            block = AES.addRoundKey(roundKeys[i],block);
+        }
+
+        block = AES.subBytes(block);
+        block = AES.shiftRows(block);
+        block = AES.addRoundKey(roundKeys[14],block);
+
+        return block;
+    }
+
+    public static byte[][] decode(byte[][] block, byte [] secretKey) {
+        byte[][] roundKeys = Keys.keyExpansion(secretKey);
+
+        block = AES.addRoundKey(roundKeys[14],block);
+        block = AES.invShiftRows(block);
+        block = AES.invSubBytes(block);
+
+        for(int i = 13; i>=1;i--) {
+            block = AES.addRoundKey(roundKeys[i],block);
+            block = AES.invMixColumns(block);
+            block = AES.invShiftRows(block);
+            block = AES.invSubBytes(block);
+        }
+
+        block = AES.addRoundKey(roundKeys[0],block);
+
+        return block;
+    }
+
+
+    private static byte[][] subBytes(byte[][] block) {
 
         byte[][] chBlock = new byte[4][4];
-        int x, y;
         for(int i = 0; i < 4; i++) {
             for(int j = 0; j < 4; j++) {
                 chBlock[i] = subWord(block[i]);
@@ -52,8 +90,18 @@ public class AES {
         }
         return chBlock;
     }
+    private static byte[][] invSubBytes(byte[][] block) {
 
-    public static byte[] subWord(byte[] word){
+        byte[][] chBlock = new byte[4][4];
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                chBlock[i] = invSubWord(block[i]);
+            }
+        }
+        return chBlock;
+    }
+
+    public static byte[] subWord(byte[] word) {
         byte[] result = new byte[word.length];
         for(int i = 0; i< word.length; i++){
             result[i] = sBox[word[i] & 0xFF];
@@ -61,11 +109,29 @@ public class AES {
         return result;
     }
 
-    public static byte[][] shiftRows(byte[][] block) {
+    private static byte[] invSubWord(byte[] word) {
+        byte[] result = new byte[word.length];
+        for(int i = 0; i< word.length; i++){
+            result[i] = invSBox[word[i] & 0xFF];
+        }
+        return result;
+    }
+
+    private static byte[][] shiftRows(byte[][] block) {
         byte[][] chBlock = block;
         for(int i = 1; i < 4; i++)  {
             for(int j =0; j<i; j++){
                 chBlock[i] = rotWord(chBlock[i]);
+            }
+        }
+        return chBlock;
+    }
+
+    private static byte[][] invShiftRows(byte[][] block) {
+        byte[][] chBlock = block;
+        for(int i = 1; i < 4; i++)  {
+            for(int j =0; j<i; j++){
+                chBlock[i] = invRotWord(chBlock[i]);
             }
         }
         return chBlock;
@@ -80,7 +146,17 @@ public class AES {
         return result;
     }
 
-    public static byte[][] mixColumns(byte[][] block) {
+    private static byte[] invRotWord(byte[] word){
+        byte[] result = new byte[word.length];
+        byte temp = word[3];
+        result[3] = word[2];
+        result[2] = word[1];
+        result[1] = word[0];
+        result[0] = temp;
+        return result;
+    }
+
+    private static byte[][] mixColumns(byte[][] block) {
         byte[][] chBlock = new byte[4][4];
 
         for (int col = 0; col < 4; col++) {
@@ -92,7 +168,7 @@ public class AES {
 
         return chBlock;
     }
-    public static byte[][] invMixColumns(byte[][] block) {
+    private static byte[][] invMixColumns(byte[][] block) {
         byte[][] chBlock = new byte[4][4];
 
         for (int col = 0; col < 4; col++) {
@@ -120,7 +196,7 @@ public class AES {
         return (byte)result;
     }
 
-    public static byte[][] addRoundKey(byte[] key, byte[][] block){
+    private static byte[][] addRoundKey(byte[] key, byte[][] block){
         byte[][] chBlock = new byte[4][4];
 
         int index = 0;
