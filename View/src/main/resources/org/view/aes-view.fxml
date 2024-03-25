@@ -72,9 +72,9 @@
       <Button fx:id="plaintextFileButton" layoutX="248.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#loadPlaintextFile" prefHeight="25.0" prefWidth="65.0" text="Otwórz" />
       <Button fx:id="crypttextFileButton" layoutX="378.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#loadEncryptedtextFile" prefHeight="25.0" prefWidth="65.0" text="Otwórz" />
       <TextField fx:id="plaintextSaveInput" layoutX="33.0" layoutY="335.0" prefHeight="25.0" prefWidth="200.0" promptText="Nazwa pliku z tekstem jawnym" />
-      <Button fx:id="plaintextSaveButton" layoutX="250.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Zapisz" />
+      <Button fx:id="plaintextSaveButton" layoutX="250.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Zapisz" onMouseClicked="#writePlaintext" />
       <TextField fx:id="crypttextSaveInput" layoutX="457.0" layoutY="335.0" prefHeight="25.0" prefWidth="200.0" promptText="Nazwa pliku z szyfrogramem" />
-      <Button fx:id="crypttextSaveButton" layoutX="378.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Zapisz" />
+      <Button fx:id="crypttextSaveButton" layoutX="378.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Zapisz" onMouseClicked="#writeCrypttext" />
       <Button fx:id="confirmPlaintextButton" layoutX="33.0" layoutY="304.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="200.0" text="Zatwierdź wpisany tekst" onMouseClicked="#inputPlaintext"/>
       <Button fx:id="confirmEncryptedtextButton" layoutX="457.0" layoutY="304.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="200.0" text="Zatwierdź wpisany tekst" onMouseClicked="#inputCryptedtext"/>
    </AnchorPane>
