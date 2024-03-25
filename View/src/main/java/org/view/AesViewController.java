@@ -100,10 +100,11 @@ public class AesViewController {
         FileReader crypttextFile = new FileReader(crypttextFileInput.getText());
         crypttextFile.read();
         byte[] byteArray = crypttextFile.getBytes();
-        String text = new String(byteArray);
-        crypttextArea.setText(text);
         encodedText = new TextBuffer(byteArray);
-        System.out.println(bytesToHex(encodedText.getBytes()));
+
+        String text = new String(encodedText.getBytes());
+        crypttextArea.setText(text);
+        inputCryptedtext(event);
 
     }
 
@@ -117,7 +118,7 @@ public class AesViewController {
 
         String crypttextInput = crypttextArea.getText();
         byte[] byteArray = crypttextInput.getBytes();
-        encodedText = new TextBuffer(byteArray);
+        encodedText = new TextBuffer(Base64.getDecoder().decode(byteArray));
 
     }
 
@@ -153,7 +154,7 @@ public class AesViewController {
 
     public void decoding(MouseEvent event){
         int textLength = encodedText.getBytes().length;
-        TextBuffer result = new TextBuffer(Base64.getDecoder().decode(encodedText.getBytes()));
+        TextBuffer result = new TextBuffer(encodedText.getBytes());
         plaintext = new TextBuffer(new byte[textLength]);
         int blockCounter = textLength/16;
         byte[][] matrix = new byte[4][4];
@@ -192,7 +193,6 @@ public class AesViewController {
         String fileName = crypttextSaveInput.getText();
         FileWriter file = new FileWriter(fileName);
         file.write(encodedText.getBytes());
-        System.out.println(bytesToHex(encodedText.getBytes()));
     }
 
 
