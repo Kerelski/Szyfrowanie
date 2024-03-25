@@ -11,9 +11,10 @@ import javafx.stage.Stage;
 import org.model.AES;
 import org.model.CipherKey;
 import org.model.FileReader;
-import org.model.textBuffer;
+import org.model.TextBuffer;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class AesViewController {
 
@@ -76,9 +77,9 @@ public class AesViewController {
 
     CipherKey key = new CipherKey();
 
-    textBuffer plaintext;
+    TextBuffer plaintext;
 
-    textBuffer encodedText;
+    TextBuffer encodedText;
 
 
     public void generateCipherKey(MouseEvent event){
@@ -93,36 +94,40 @@ public class AesViewController {
     public void loadPlaintextFile(MouseEvent event) throws Exception {
         FileReader plaintextFile = new FileReader(plaintextFileInput.getText());
         plaintextFile.read();
-        plaintext = new textBuffer(plaintextFile.getBytes());
-        String text = new String(plaintext.getBytes());
+        String text = new String(plaintextFile.getBytes());
         plaintextArea.setText(text);
+        plaintext = new TextBuffer(plaintextFile.getBytes());
+        System.out.println(bytesToHex(plaintext.getBytes()));
     }
 
     public void loadEncryptedtextFile(MouseEvent event) throws Exception {
         FileReader crypttextFile = new FileReader(crypttextFileInput.getText());
         crypttextFile.read();
-        encodedText = new textBuffer(crypttextFile.getBytes());
-        String text = new String(encodedText.getBytes());
+        byte[] byteArray = crypttextFile.getBytes();
+        String text = new String(byteArray);
         crypttextArea.setText(text);
+        encodedText = new TextBuffer(Base64.getDecoder().decode(byteArray));
+
     }
 
     public void inputPlaintext(MouseEvent event){
         String plaintextInput = plaintextArea.getText();
         byte[] byteArray = plaintextInput.getBytes();
-        plaintext = new textBuffer(byteArray);
+        plaintext = new TextBuffer(byteArray);
     }
 
     public void inputCryptedtext(MouseEvent event){
 
         String crypttextInput = crypttextArea.getText();
         byte[] byteArray = crypttextInput.getBytes();
-        encodedText = new textBuffer(byteArray);
-
+        encodedText = new TextBuffer(Base64.getDecoder().decode(byteArray));
+        System.out.println(bytesToHex(encodedText.getBytes()));
     }
 
     public void encoding(MouseEvent event){
         int textLength = plaintext.getBytes().length;
-        encodedText = new textBuffer(new byte[textLength]);
+        TextBuffer result = new TextBuffer(new byte[textLength]);
+
         int blockCounter = textLength/16;
         byte[][] matrix = new byte[4][4];
         int plainIndex = 0;
@@ -138,12 +143,13 @@ public class AesViewController {
             byte[][] temp = AES.encode(matrix, key.getCipherKey());
             for (int p =0; p<4; p++){
                 for (int r = 0; r<4; r++){
-                    encodedText.getBytes()[encodedIndex] = temp[p][r];
+                    result.getBytes()[encodedIndex] = temp[p][r];
                     encodedIndex++;
                 }
             }
         }
-
+        encodedText = new TextBuffer(Base64.getEncoder().encode(result.getBytes()));
+        System.out.println(bytesToHex(encodedText.getBytes()));
         String text = new String(encodedText.getBytes());
         crypttextArea.setText(text);
 
@@ -151,7 +157,8 @@ public class AesViewController {
 
     public void decoding(MouseEvent event){
         int textLength = encodedText.getBytes().length;
-        plaintext = new textBuffer(new byte[textLength]);
+        TextBuffer result = new TextBuffer(encodedText.getBytes());
+        plaintext = new TextBuffer(new byte[textLength]);
         int blockCounter = textLength/16;
         byte[][] matrix = new byte[4][4];
         int plainIndex = 0;
@@ -159,7 +166,7 @@ public class AesViewController {
         for (int i = 0; i<blockCounter; i++){
             for (int j = 0; j<4; j++){
                 for (int k = 0; k<4; k++){
-                    matrix[j][k] = encodedText.getBytes()[encodedIndex];
+                    matrix[j][k] = result.getBytes()[encodedIndex];
                     encodedIndex++;
 
                 }
@@ -172,8 +179,10 @@ public class AesViewController {
                 }
             }
         }
-
-        String text = new String(plaintext.getBytes());
+        System.out.println(bytesToHex(plaintext.getBytes()));
+        int addedBytes = plaintext.getBytes()[textLength-1];
+        byte[] byteArray = Arrays.copyOf(plaintext.getBytes(), textLength-addedBytes);
+        String text = new String(byteArray);
         plaintextArea.setText(text);
     }
 
