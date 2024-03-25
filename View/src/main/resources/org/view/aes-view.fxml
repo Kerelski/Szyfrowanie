@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox prefHeight="540.0" prefWidth="691.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.view.AesViewController">
+   <AnchorPane id="keySection" prefHeight="182.0" prefWidth="691.0">
+      <Button fx:id="keyButton" layoutX="39.0" layoutY="101.0" mnemonicParsing="false" onMouseClicked="#generateCipherKey" text="Generuj klucz" />
+      <TextField fx:id="keyInput" layoutX="37.0" layoutY="59.0" prefHeight="25.0" prefWidth="500.0" promptText="Klucz heksadecymalnie" />
+      <Text layoutX="37.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Klucz">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Button fx:id="exitButton" layoutX="621.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#onExitClick" text="Wyjście" />
+      <Text layoutX="320.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="AES">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Text>
+      <Button fx:id="confirmButton" layoutX="142.0" layoutY="101.0" mnemonicParsing="false" onMouseClicked="#setCipherKey" text="Zatwierdź" />
+   </AnchorPane>
+   <AnchorPane id="encryptSection" prefHeight="390.0" prefWidth="691.0">
+      <TextArea fx:id="crypttextArea" layoutX="457.0" layoutY="94.0" prefHeight="200.0" prefWidth="200.0" promptText="Tu podaj szyfrogram" />
+      <Button fx:id="encrypt" layoutX="313.0" layoutY="144.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Szyfruj" onMouseClicked="#encoding" />
+      <Button fx:id="decrypt" layoutX="313.0" layoutY="182.0" mnemonicParsing="false" text="Deszyfruj" onMouseClicked="#decoding" />
+      <TextArea fx:id="plaintextArea" layoutX="33.0" layoutY="94.0" prefHeight="200.0" prefWidth="200.0" promptText="Tu wpisz tekst" />
+      <Text layoutX="33.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Szyfrowanie / Deszyfrowanie">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <TextField fx:id="plaintextFileInput" layoutX="31.0" layoutY="56.0" prefHeight="25.0" prefWidth="200.0" promptText="Nazwa pliku z tekstem jawnym" />
+      <TextField fx:id="crypttextFileInput" layoutX="457.0" layoutY="56.0" prefHeight="25.0" prefWidth="200.0" promptText="Nazwa pliku z szyfrogramem" />
+      <Button fx:id="plaintextFileButton" layoutX="248.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#loadPlaintextFile" prefHeight="25.0" prefWidth="65.0" text="Otwórz" />
+      <Button fx:id="crypttextFileButton" layoutX="378.0" layoutY="56.0" mnemonicParsing="false" onMouseClicked="#loadEncryptedtextFile" prefHeight="25.0" prefWidth="65.0" text="Otwórz" />
+      <TextField fx:id="plaintextSaveInput" layoutX="33.0" layoutY="335.0" prefHeight="25.0" prefWidth="200.0" promptText="Nazwa pliku z tekstem jawnym" />
+      <Button fx:id="plaintextSaveButton" layoutX="250.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Zapisz" />
+      <TextField fx:id="crypttextSaveInput" layoutX="457.0" layoutY="335.0" prefHeight="25.0" prefWidth="200.0" promptText="Nazwa pliku z szyfrogramem" />
+      <Button fx:id="crypttextSaveButton" layoutX="378.0" layoutY="335.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Zapisz" />
+      <Button fx:id="confirmPlaintextButton" layoutX="33.0" layoutY="304.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="200.0" text="Zatwierdź wpisany tekst" onMouseClicked="#inputPlaintext"/>
+      <Button fx:id="confirmEncryptedtextButton" layoutX="457.0" layoutY="304.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="200.0" text="Zatwierdź wpisany tekst" onMouseClicked="#inputCryptedtext"/>
+   </AnchorPane>
+</VBox>

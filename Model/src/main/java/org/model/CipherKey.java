@@ -1,11 +1,12 @@
-package org.example;
+package org.model;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 public class CipherKey {
 
     private byte[] cipherKey;
-    public CipherKey(int bits){
+
+    public void generate(int bits){
         try{
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(bits);
@@ -15,23 +16,23 @@ public class CipherKey {
             System.out.println("Nie ma takiego algorytmu" + e);
         }
     }
-
     public byte[] getCipherKey() {
         return cipherKey;
     }
 
-    public void showKey(){
-        System.out.println("Klucz w postaci bajtów: " + bytesToHex(cipherKey));
-    }
+    public void setCipherKey(String input) {
+        if(input.length() == 64){
+            byte[] byteArray = new byte[input.length() / 2];
+            for (int i = 0; i < byteArray.length; i++) {
+                int index = i * 2;
+                int num = Integer.parseInt(input.substring(index, index + 2), 16);
+                byteArray[i] = (byte) num;
+            }
 
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            result.append(String.format("%02X", b));
+        this.cipherKey = byteArray;
+        }else {
+            System.out.println("Nieprawidlowa dlugosc klucza");
         }
-        return result.toString();
+
     }
-
-
-
 }
